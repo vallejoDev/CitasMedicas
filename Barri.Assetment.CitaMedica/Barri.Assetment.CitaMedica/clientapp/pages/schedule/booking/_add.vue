@@ -6,7 +6,7 @@
           Agendar
         </span>
       </div>
-      <form class="divide-y-2 flex flex-col justify-around px-2 bg-gray-100" :disabled="searched" @submit.prevent="save">
+      <form class="divide-y-2 flex flex-col justify-around px-2 bg-gray-100" :disabled="searched" @submit.prevent="submit">
         <div class="flex flex-row py-2 justify-center space-x-2 w-full">
           <input v-model="reservation.fecha" class="input" type="date" placeholder="Fecha">
           <input v-model="reservation.hora" class="input" type="time" placeholder="Hora">
@@ -111,6 +111,16 @@ export default {
     this.reservation.hora = this.$route.query.horario
   },
   methods: {
+    submit() {
+      this.$vToastify.prompt({
+        body: '¿Está seguro de agendar?',
+        answers: { Yes: true, No: false }
+      }).then((value) => {
+        if (value) {
+          this.save()
+        }
+      })
+    },
     async save() {
       const _proccessId = this.$vToastify.loader('Guardando')
       try {
@@ -125,6 +135,7 @@ export default {
         this.$vToastify.error('Sucedio un error al reservar')
       } finally {
         this.$vToastify.stopLoader(_proccessId)
+        this.back()
       }
     },
     async search () {
